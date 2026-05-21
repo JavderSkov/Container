@@ -3,35 +3,35 @@
   hosts: localhost
   gather_facts: false
   vars:
-    # Proxmox API connection details
-    api_host: "10.101.7.27"               # Replace with your Proxmox IP
-    api_user: "root@pam"                   # Or your API token user (e.g., user@pve!token_id)
-    api_password: "Kode1234!" # Or api_token_secret if using tokens
-    pve_node: "jasper"                        # The name of your Proxmox node
+    # Proxmox API login
+    api_host: "10.101.7.27"
+    api_user: "root@pam"         # <-- Denne SKAL være her
+    api_token_id: "jasp"      # <-- KUN navnet på din token, fjern 'root@pam!'
+    api_token_secret: "6902d28d-2d72-45c6-9b72-5297fca8feb5"
+    pve_node: "jasper"              # <-- Ret dette hvis din Proxmox node hedder noget andet
 
-    # Container configuration
+    # Container opsætning
     lxc_vmid: 200
     lxc_hostname: "debian-server"
-    lxc_password: "RootPassword123!"       # Root password for the new container
+    lxc_password: "RootPassword123!"
     
-    # Template and Storage
-    # Note: Ensure this template is already downloaded to your Proxmox storage
+    # Skabelon og disk
     lxc_template: "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst" 
     lxc_storage: "local-lvm"
     
-    # Resources
+    # Ressourcer
     lxc_cores: 2
-    lxc_memory: 2048 # in MB
-    lxc_swap: 512    # in MB
+    lxc_memory: 2048
+    lxc_swap: 512
 
   tasks:
     - name: Create the Debian container
       community.general.proxmox:
         api_host: "{{ api_host }}"
-        api_user: "{{ api_user }}"
-        api_password: "{{ api_password }}"
-        # Use api_token_id and api_token_secret instead of api_password if using API tokens
-        validate_certs: false # Set to true if you have a valid SSL cert on Proxmox
+        api_user: "{{ api_user }}"             # <-- Tilføjet her
+        api_token_id: "{{ api_token_id }}"
+        api_token_secret: "{{ api_token_secret }}"
+        validate_certs: false
         node: "{{ pve_node }}"
         vmid: "{{ lxc_vmid }}"
         hostname: "{{ lxc_hostname }}"
@@ -48,8 +48,9 @@
     - name: Start the container
       community.general.proxmox:
         api_host: "{{ api_host }}"
-        api_user: "{{ api_user }}"
-        api_password: "{{ api_password }}"
+        api_user: "{{ api_user }}"             # <-- Tilføjet her
+        api_token_id: "{{ api_token_id }}"
+        api_token_secret: "{{ api_token_secret }}"
         validate_certs: false
         node: "{{ pve_node }}"
         vmid: "{{ lxc_vmid }}"
